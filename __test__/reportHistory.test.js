@@ -16,9 +16,9 @@ jest.mock('../models', () => ({
 // 🔧 Dummy Express app
 const app = express();
 app.use(bodyParser.json());
-app.get('/history/:reportId', getStatusHistoryByReport);
+app.get('/reportstatus/:reportId', getStatusHistoryByReport);
 
-describe('GET /history/:reportId', () => {
+describe('GET /reportstatus/:reportId', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -36,7 +36,7 @@ describe('GET /history/:reportId', () => {
 
     ReportStatusHistory.findAll.mockResolvedValue(dummyHistory);
 
-    const res = await request(app).get('/history/123');
+    const res = await request(app).get('/reportstatus/123');
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('message', 'Riwayat status berhasil diambil');
@@ -51,7 +51,7 @@ describe('GET /history/:reportId', () => {
   it('❌ gagal mengambil status history karena error DB', async () => {
     ReportStatusHistory.findAll.mockRejectedValue(new Error('DB error'));
 
-    const res = await request(app).get('/history/123');
+    const res = await request(app).get('/reportstatus/123');
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toHaveProperty('message', 'Gagal mengambil riwayat status');
