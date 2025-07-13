@@ -1,7 +1,7 @@
 # 📢 Lapor.in - Backend
 
 [![CI](https://github.com/AlfianFR1/backend_laporin/actions/workflows/ci.yml/badge.svg)](https://github.com/AlfianFR1/backend_laporin/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/AlfianFR1/backend_laporin/badge.svg?branch=main)](https://coveralls.io/github/AlfianFR1/backend_laporin?branch=main)
+[![codecov](https://codecov.io/gh/AlfianFR1/backend_laporin/branch/main/graph/badge.svg)](https://codecov.io/gh/AlfianFR1/backend_laporin)
 ![License](https://img.shields.io/github/license/AlfianFR1/backend_laporin)
 ![Last Commit](https://img.shields.io/github/last-commit/AlfianFR1/backend_laporin)
 ![Node.js](https://img.shields.io/badge/node-%3E=18.0.0-brightgreen)
