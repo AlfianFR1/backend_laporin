@@ -23,8 +23,9 @@ jobs:
       - name: 📦 Install dependencies
         run: npm install
 
-      - name: 🧪 Run Tests with Environment Variables
-        run: npm test
+
+      - name: 🧪 Run Tests + Coverage
+        run: npm run test:coverage
         env:
           NODE_ENV: test
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
@@ -35,8 +36,6 @@ jobs:
           DB_DRIVER: ${{ secrets.DB_DRIVER }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
-
-          # Firebase credentials (opsional jika dipakai di test)
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_PRIVATE_KEY_ID: ${{ secrets.FIREBASE_PRIVATE_KEY_ID }}
           FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
@@ -47,3 +46,8 @@ jobs:
           FIREBASE_AUTH_PROVIDER_X509_CERT_URL: ${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}
           FIREBASE_CLIENT_X509_CERT_URL: ${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}
           FIREBASE_UNIVERSE_DOMAIN: ${{ secrets.FIREBASE_UNIVERSE_DOMAIN }}
+
+      - name: ☁️ Upload coverage ke Coveralls
+        run: cat coverage/lcov.info | ./node_modules/.bin/coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}

@@ -2,6 +2,7 @@ const { Report, User, ReportComment, ReportStatusHistory } = require('../models'
 const { deleteFile } = require('../utils/uploads');
 const path = require('path');
 const { Op } = require('sequelize');
+const fs = require('fs');
 
 // Create a new report
 const createReport = async (req, res) => {
@@ -186,19 +187,26 @@ const updateReportById = async (req, res) => {
     }
 
     // Update title dan description jika ada
-    if (title) report.title = title;
-    if (description) report.description = description;
+    if (title !== undefined) report.title = title;
+    if (description !== undefined) report.description = description;
 
     // Ganti gambar jika ada file image diupload
-    if (req.file) {
-      // Hapus gambar lama jika ada
-      if (report.image_url) {
-        const oldImagePath = path.join(__dirname, '..', report.image_url);
-        if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
+    if (req.file?.filename) {
+      try {
+        // Hapus gambar lama jika ada
+        if (report.image_url) {
+          const oldImagePath = path.join(__dirname, '..', report.image_url);
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+          }
+        }
+      } catch (err) {
+        console.warn('⚠️ Gagal hapus gambar lama:', err.message);
+        // Lanjut saja meskipun gagal hapus
       }
 
       // Simpan path gambar baru
-      report.image_url = `uploads/${req.file.filename}`;
+      report.image_url = `storages/${req.file.filename}`;
     }
 
     await report.save();
@@ -208,6 +216,7 @@ const updateReportById = async (req, res) => {
       data: report,
     });
   } catch (error) {
+    console.error('❌ updateReportById error:', error);
     return res.status(500).json({
       message: 'Gagal memperbarui laporan',
       error: error.message,
@@ -215,32 +224,6 @@ const updateReportById = async (req, res) => {
   }
 };
 
-// Cancel a report (admin or owner)
-const cancelReportById = async (req, res) => {
-  try {
-    const report = await Report.findByPk(req.params.id);
-
-    if (!report) {
-      return res.status(404).json({ message: 'Laporan tidak ditemukan' });
-    }
-
-    if (req.user.role !== 'admin' || req.user.uid !== report.user_uid) {
-      return res.status(403).json({ message: 'Akses ditolak' });
-    }
-
-    // Cek apakah laporan sudah dibatalkan sebelumnya
-    if (report.status === 'canceled') {
-      return res.status(400).json({ message: 'Laporan sudah dibatalkan sebelumnya' });
-    }
-
-    // Update status menjadi 'canceled'
-    await report.update({ status: 'canceled' });
-
-    return res.status(200).json({ message: 'Laporan berhasil dibatalkan' });
-  } catch (error) {
-    return res.status(500).json({ message: 'Gagal membatalkan laporan', error: error.message });
-  }
-};
 
 
 const getReportDetail = async (req, res) => {
@@ -279,6 +262,5 @@ module.exports = {
   getAllReportStats,
   getReportById,
   updateReportById,
-  cancelReportById,
   getReportDetail
 };

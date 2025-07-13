@@ -5,3 +5,6 @@ dist/
 storages/*
 # Tapi jangan ignore file .gitkeep
 !storages/.gitkeep
+
+# Coverage output
+coverage/

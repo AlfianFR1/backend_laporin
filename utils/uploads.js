@@ -16,7 +16,15 @@ const storage = multer.diskStorage({
 const uploads = multer({ storage });
 
 const deleteFile = (filePath) => {
-    fs.unlinkSync(path.join(__dirname, '..', filePath));
+    try {
+  const oldImagePath = path.join(__dirname, '..', report.image_url);
+  if (fs.existsSync(oldImagePath)) {
+    fs.unlinkSync(oldImagePath);
+  }
+} catch (err) {
+  console.warn('⚠️ Gagal hapus gambar lama:', err.message);
+}
+
 };
 
 module.exports = {

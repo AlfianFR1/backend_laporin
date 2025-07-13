@@ -5,7 +5,6 @@ const {
   getMyReportStats,
   getReportById,
   updateReportById,
-  cancelReportById,
   getReportDetail,
   getAllReportStats
 } = require('../controllers/reportController');
@@ -26,16 +25,12 @@ router.post('/reports', firebaseAuth, uploads.single('image'), createReport);
     router.get('/my-report-stats', firebaseAuth, getMyReportStats);
     router.get('/report-stats', firebaseAuth, getAllReportStats);
     router.get('/reports',  firebaseAuth, getAllReports);
-
-
-    
     router.get('/reports/:id',  getReportById);
-
     router.put(
         '/report/:id',
         firebaseAuth,
         uploads.single('image'),
         updateReportById
     );
-    router.delete('/reports/:id',cancelReportById);
+    
 };
