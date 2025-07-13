@@ -9,9 +9,9 @@ const {
 
 
 module.exports = (router)=>{
-    // router.post('/', authenticate, controller.createStatusHistory);
+
 router.get('/reportstatus/:reportId', firebaseAuth, getStatusHistoryByReport);
-// router.get('/', authenticate, controller.getAllStatusHistories);
+
 
 
 
