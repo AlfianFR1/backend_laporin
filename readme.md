@@ -1,7 +1,7 @@
 # Nama Proyek
 
-[![CI](https://github.com/username/nama-repo/actions/workflows/nodejs.yml/badge.svg)](https://github.com/username/nama-repo/actions/workflows/nodejs.yml)
-[![Coverage Status](https://coveralls.io/repos/github/username/nama-repo/badge.svg?branch=main)](https://coveralls.io/github/username/nama-repo?branch=main)
+[![CI](https://github.com/AlfianFR1/backend_laporin/actions/workflows/ci.yml/badge.svg)](https://github.com/AlfianFR1/backend_laporin/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/AlfianFR1/backend_laporin/badge.svg?branch=main)](https://coveralls.io/github/AlfianFR1/backend_laporin?branch=main)
 
 
 # Nama Proyek
