@@ -3,12 +3,13 @@ require('dotenv').config();
 const { admin, db } = require('../config/firebase');
 
 // const ADMIN_EMAIL = 'rohmanfatur.alfian@gmail.com'; // ⬅️ Bisa pindahkan ke ENV
-const ADMIN_EMAIL = process.env.AUTHFIREBASE_ADMINEMAIL;
+
 
 
 const loginWithGoogle = async (req, res) => {
   const { idToken } = req.body;
-
+  
+const ADMIN_EMAIL = process.env.AUTHFIREBASE_ADMINEMAIL;
   if (!idToken) {
     return res.status(400).json({ error: 'ID Token tidak ditemukan.' });
   }
@@ -55,9 +56,10 @@ const loginWithGoogle = async (req, res) => {
       role,
     });
   } catch (error) {
-    console.error('❌ Gagal login dengan Google:', error.message);
-    res.status(401).json({ error: 'ID Token tidak valid atau expired.' });
+    console.error('❌ Gagal login dengan Google:', error?.message || error);
+    return res.status(401).json({ error: 'ID Token tidak valid atau expired.' });
   }
+
 };
 
 // ✅ Fungsi baru: Ambil semua user

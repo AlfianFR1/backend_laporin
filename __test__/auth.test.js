@@ -1,23 +1,19 @@
-// __tests__/auth.test.js
 
-require('dotenv').config();
 const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-// Import controller (modul yang mau kita test)
+process.env.AUTHFIREBASE_ADMINEMAIL = 'test@example.com'; // WAJIB duluan
+require('dotenv').config(); // opsional
 const { loginWithGoogle } = require('../controllers/authController');
 
-// Buat express app sementara untuk test endpoint
-
-const ADMIN_EMAIL = process.env.AUTHFIREBASE_ADMINEMAIL;
 
 
-const app = express();
-app.use(bodyParser.json());
-app.post('/login', loginWithGoogle);
+// Dummy token
+const dummyIdToken = 'FAKE_ID_TOKEN';
 
-// 🔧 Mock Firebase admin
+require('dotenv').config();
+// 🔧 Mock Firebase admin + firestore
 jest.mock('../config/firebase', () => {
   const mockSet = jest.fn().mockResolvedValue();
   const mockGet = jest.fn().mockResolvedValue({
@@ -56,25 +52,27 @@ jest.mock('../config/firebase', () => {
   };
 });
 
-
+// Buat express app dummy untuk testing controller secara nyata
+const app = express();
+app.use(bodyParser.json());
+app.post('/login', loginWithGoogle);
 
 describe('POST /login', () => {
   it('✅ berhasil login dengan ID token valid', async () => {
     const res = await request(app).post('/login').send({
-      idToken: 'dummy-valid-id-token',
+      idToken: dummyIdToken,
     });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty('uid');
-    expect(res.body.email).toBe('test@example.com');
-    expect(res.body.role).toBeDefined();
+    expect(res.body).toHaveProperty('uid', 'testuid123');
+    expect(res.body).toHaveProperty('email', 'test@example.com');
+    expect(res.body).toHaveProperty('role', 'admin');
   });
 
   it('❌ gagal login karena ID token tidak dikirim', async () => {
     const res = await request(app).post('/login').send({});
 
     expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty('error');
-    expect(res.body.error).toBe('ID Token tidak ditemukan.');
+    expect(res.body).toHaveProperty('error', 'ID Token tidak ditemukan.');
   });
 });
