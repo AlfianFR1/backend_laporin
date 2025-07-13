@@ -1,27 +1,37 @@
-# .github/workflows/ci.yml
-name: CI
+name: Run Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Install dependencies
-      run: npm install
+      - name: 📦 Install dependencies
+        run: npm install
 
-    - name: Run tests
-      run: npm test
+      - name: 📄 Inject .env for testing
+        run: |
+          echo "ADMIN_EMAIL=test@example.com" >> .env
+          echo "DB_USER=root" >> .env
+          echo "DB_PASS=password" >> .env
+          echo "DB_NAME=laporin" >> .env
+          echo "DB_HOST=localhost" >> .env
+          echo "DB_DRIVER=mysql" >> .env
+          echo "JWT_SECRET=secret" >> .env
+          echo "JWT_EXPIRES_IN=1d" >> .env
+
+      - name: 🧪 Run Tests
+        run: npm test

@@ -1,7 +1,10 @@
+
+require('dotenv').config();
 const { admin, db } = require('../config/firebase');
 
 // const ADMIN_EMAIL = 'rohmanfatur.alfian@gmail.com'; // ⬅️ Bisa pindahkan ke ENV
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL
+const ADMIN_EMAIL = process.env.AUTHFIREBASE_ADMINEMAIL;
+
 
 const loginWithGoogle = async (req, res) => {
   const { idToken } = req.body;
