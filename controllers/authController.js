@@ -8,16 +8,21 @@ const { admin, db } = require('../config/firebase');
 
 const loginWithGoogle = async (req, res) => {
   const { idToken } = req.body;
+  // console.log('Received token from Flutter:', req.body.idToken);
+
   
 const ADMIN_EMAIL = process.env.AUTHFIREBASE_ADMINEMAIL;
   if (!idToken) {
     return res.status(400).json({ error: 'ID Token tidak ditemukan.' });
   }
+  
 
   try {
     // 🔐 Verifikasi ID token dari Firebase Auth
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const { uid, email, name, picture } = decodedToken;
+    // console.log('[DEBUG] private_key:', process.env.FIREBASE_PRIVATE_KEY.slice(0, 30)); // jangan log seluruhnya demi keamanan
+
 
     if (!email) {
       return res.status(400).json({ error: 'Email tidak valid di token.' });
