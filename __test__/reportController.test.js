@@ -1,3 +1,5 @@
+require('dotenv').config(); // ← agar .env ter-load
+
 const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
