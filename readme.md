@@ -19,7 +19,7 @@ Sistem backend untuk aplikasi **Lapor.in**, sebuah platform pelaporan masalah ol
 - 📝 Komentar & histori status laporan
 - 📊 Statistik laporan
 - ✅ Unit test (Jest + Supertest)
-- ☁️ CI/CD dengan GitHub Actions + Coveralls
+- ☁️ CI/CD dengan GitHub Actions + Codecov
 
 ---
 
@@ -32,7 +32,7 @@ Sistem backend untuk aplikasi **Lapor.in**, sebuah platform pelaporan masalah ol
 - [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup)
 - [Jest](https://jestjs.io/) + [Supertest](https://github.com/ladjs/supertest)
 - [GitHub Actions](https://docs.github.com/en/actions)
-- [Coveralls](https://coveralls.io/) (opsional)
+- [Codecov](https://about.codecov.io/)
 
 ---
 
