@@ -1,13 +1,46 @@
-require('dotenv').config(); // ← agar .env ter-load
+require('dotenv').config(); // Memuat .env
 
 const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const os = require('os');
 const app = express();
+
+// Mock firebase-admin agar Firestore tidak error saat test
+jest.mock('firebase-admin', () => ({
+  initializeApp: jest.fn(),
+  credential: {
+    cert: jest.fn()
+  },
+  firestore: () => ({
+    collection: jest.fn(() => ({
+      add: jest.fn().mockResolvedValue({ id: 'mock-id' }),
+      doc: jest.fn(() => ({
+        set: jest.fn().mockResolvedValue(),
+        update: jest.fn().mockResolvedValue(),
+        get: jest.fn().mockResolvedValue({
+          exists: true,
+          data: () => ({
+            title: 'Mock Title',
+            description: 'Mock Description',
+            user_uid: 'mockuid'
+          })
+        })
+      })),
+      where: jest.fn(() => ({
+        get: jest.fn().mockResolvedValue({
+          size: 0,
+          forEach: jest.fn()
+        })
+      })),
+      get: jest.fn().mockResolvedValue({
+        size: 0,
+        forEach: jest.fn()
+      })
+    }))
+  })
+}));
 
 // Middleware dasar
 app.use(bodyParser.json());
@@ -15,14 +48,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Mock user middleware
 app.use((req, res, next) => {
-  req.user = { uid: 'mockuid', role: 'user' }; // Ubah role jadi 'admin' untuk test admin
+  req.user = { uid: 'mockuid', role: 'user' }; // ubah role ke 'admin' kalau perlu
   next();
 });
 
-// Mock upload file middleware
+// Upload
 const upload = multer({ dest: os.tmpdir() });
 
-// Mock model dan util
+// Mock model & util
 jest.mock('../models', () => ({
   Report: {
     create: jest.fn().mockResolvedValue({ id: 1, title: 'Mock Title', description: 'Mock Description', user_uid: 'mockuid' }),
@@ -51,7 +84,7 @@ jest.mock('../utils/uploads', () => ({
 
 const reportController = require('../controllers/reportController');
 
-// Pasang route dummy
+// Routes
 app.post('/reports', upload.single('image'), reportController.createReport);
 app.get('/reports', reportController.getAllReports);
 app.get('/myreports', reportController.getMyReports);
@@ -60,22 +93,19 @@ app.get('/report-stats', reportController.getAllReportStats);
 app.get('/reports/:id', reportController.getReportById);
 app.put('/report/:id', upload.single('image'), reportController.updateReportById);
 
-
-// TEST
-
+// TESTS
 describe('📋 Report Controller Tests', () => {
-it('✅ createReport - berhasil', async () => {
-  const res = await request(app)
-    .post('/reports')
-    .field('title', 'Judul Laporan')
-    .field('description', 'Deskripsi laporan')
-    .attach('image', Buffer.from('dummy'), 'image.jpg'); // ← penting agar req.file tidak undefined
+  it('✅ createReport - berhasil', async () => {
+    const res = await request(app)
+      .post('/reports')
+      .field('title', 'Judul Laporan')
+      .field('description', 'Deskripsi laporan')
+      .attach('image', Buffer.from('dummy'), 'image.jpg');
 
-  expect(res.statusCode).toBe(201);
-  expect(res.body.message).toMatch(/berhasil/i);
-  expect(res.body.data).toHaveProperty('title', 'Mock Title');
-}, 10000); // tambah timeout 10 detik
-
+    expect(res.statusCode).toBe(201);
+    expect(res.body.message).toMatch(/berhasil/i);
+    expect(res.body.data).toHaveProperty('title', 'Mock Title');
+  }, 10000);
 
   it('❌ createReport - gagal tanpa title', async () => {
     const res = await request(app)
@@ -105,7 +135,6 @@ it('✅ createReport - berhasil', async () => {
   });
 
   it('✅ getAllReportStats', async () => {
-    req = { user: { uid: 'mockuid' } };
     const res = await request(app).get('/report-stats');
     expect(res.statusCode).toBe(200);
     expect(res.body.data).toHaveProperty('total');
