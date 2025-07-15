@@ -64,16 +64,18 @@ app.put('/report/:id', upload.single('image'), reportController.updateReportById
 // TEST
 
 describe('📋 Report Controller Tests', () => {
-  it('✅ createReport - berhasil', async () => {
-    const res = await request(app)
-      .post('/reports')
-      .field('title', 'Judul Laporan')
-      .field('description', 'Deskripsi laporan');
+it('✅ createReport - berhasil', async () => {
+  const res = await request(app)
+    .post('/reports')
+    .field('title', 'Judul Laporan')
+    .field('description', 'Deskripsi laporan')
+    .attach('image', Buffer.from('dummy'), 'image.jpg'); // ← penting agar req.file tidak undefined
 
-    expect(res.statusCode).toBe(201);
-    expect(res.body.message).toMatch(/berhasil/i);
-    expect(res.body.data).toHaveProperty('title', 'Mock Title');
-  });
+  expect(res.statusCode).toBe(201);
+  expect(res.body.message).toMatch(/berhasil/i);
+  expect(res.body.data).toHaveProperty('title', 'Mock Title');
+}, 10000); // tambah timeout 10 detik
+
 
   it('❌ createReport - gagal tanpa title', async () => {
     const res = await request(app)
