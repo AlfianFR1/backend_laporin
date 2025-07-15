@@ -4,6 +4,7 @@ const reportRoute = require('./reportRoute');
 const reportstatusRoute = require('./reporStatusRoute');
 const authRoute = require('./authRoute');
 const reportCommentRoute = require('./reportCommentRoute');
+const notificationRoute = require('./notificationRoute')
 const router = Router();
 
 module.exports = () => {
@@ -12,5 +13,6 @@ module.exports = () => {
     reportstatusRoute(router);
     authRoute(router);
     reportCommentRoute(router);
+    notificationRoute(router);
     return router;
 };

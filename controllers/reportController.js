@@ -5,6 +5,8 @@ const { Op } = require('sequelize');
 const fs = require('fs');
 
 // Create a new report
+const { admin } = require('../config/firebase'); // untuk FCM
+
 const createReport = async (req, res) => {
   try {
     console.log('[createReport] req.body:', req.body);
@@ -32,12 +34,54 @@ const createReport = async (req, res) => {
       user_uid: req.user.uid,
     });
 
-    res.status(201).json({ message: 'Laporan berhasil dibuat', data: report });
+    // ✅ Kirim FCM ke semua admin
+    const snapshot = await admin.firestore().collection('users')
+      .where('role', '==', 'admin')
+      .get();
+
+    const tokens = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.fcm_token) {
+        tokens.push(data.fcm_token);
+      }
+    });
+
+    const message = {
+      notification: {
+        title: 'Laporan Baru Masuk',
+        body: `Judul: ${title}`,
+      },
+      data: {
+        reportId: report.id.toString(),
+      },
+    };
+
+    const responses = [];
+
+    for (const token of tokens) {
+      try {
+        const response = await admin.messaging().send({ ...message, token });
+        console.log(`✅ Notifikasi terkirim ke admin token: ${token}`);
+        responses.push(response);
+      } catch (err) {
+        console.error(`❌ Gagal kirim ke ${token}:`, err.message);
+      }
+    }
+
+    res.status(201).json({
+      message: 'Laporan berhasil dibuat & notifikasi dikirim',
+      data: report,
+      fcmSentTo: tokens.length,
+    });
+
   } catch (error) {
     if (req.file) deleteFile(req.file.path);
+    console.error('❌ Error createReport:', error);
     res.status(500).json({ message: 'Gagal membuat laporan', error: error.message });
   }
 };
+
 
 // Get all reports (admin only)
 const getAllReports = async (req, res) => {
